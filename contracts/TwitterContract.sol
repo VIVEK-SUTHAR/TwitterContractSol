@@ -7,47 +7,60 @@ contract TwitterCloneContract {
     event userTwitted(
         address indexed from,
         uint256 timestamp,
+        uint tweetId,
         string username,
-        string tweetMessage
+        string tweetMessage,
+        string imageLink
     );
-
     struct Tweet {
         address from;
         uint256 timestamp;
+        uint256 tweetId;
         string username;
         string tweetMessage;
+        string imageLink;
     }
-    // Address of contract deployer Marked as payable so that  we can withdraw to this address later.
     address payable owner;
 
-    // List of all tweets  stored on block-chain
-    Tweet[] tweets;
+    Tweet[] private tweets;
 
     constructor() {
-        // Store the address of the deployer as a payable address.
         owner = payable(msg.sender);
     }
 
-    //fetches all stored tweets
+    function getOwner() public view returns (address) {
+        return owner;
+    }
+
     function getTweets() public view returns (Tweet[] memory) {
         return tweets;
     }
 
-    function postTweet(string memory _username, string memory _tweetMessage)
-        public
-        payable
-    {
-        // Must accept more than 0 ETH for tweeting your twe
-        require(msg.value > 0, "Can't tweet for free,Just pay some gas !");
-
+    function postTweet(
+        uint256 tweetId_,
+        string memory username_,
+        string memory tweetMessage_,
+        string memory imageLink_
+    ) public {
         // Add the tweet to storage
         tweets.push(
-            Tweet(msg.sender, block.timestamp, _username, _tweetMessage)
+            Tweet(
+                msg.sender,
+                block.timestamp,
+                tweetId_,
+                username_,
+                tweetMessage_,
+                imageLink_
+            )
         );
-
         // Emit a userTwitted event with details about the the tweet.
-        emit userTwitted(msg.sender, block.timestamp, _username, _tweetMessage);
+        emit userTwitted(
+            msg.sender,
+            block.timestamp,
+            tweetId_,
+            username_,
+            tweetMessage_,
+            imageLink_
+        );
     }
-
-   
 }
